@@ -1,0 +1,9 @@
+[project]
+name = "amarillo-metrics"
+version = "0.0.1"
+
+dependencies = [
+    "fastapi",
+    "prometheus-fastapi-instrumentator",
+    "prometheus-client"
+]
