@@ -8,6 +8,8 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from datetime import datetime
 from prometheus_client.exposition import generate_latest
 from prometheus_client import Gauge, Counter
+from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_fastapi_instrumentator import metrics as pfi_metrics
 from prometheus_fastapi_instrumentator.metrics import Info
 from fastapi import Depends, HTTPException, FastAPI
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -47,3 +49,16 @@ def metrics(credentials: HTTPBasicCredentials = Depends(security)):
     
     # total_requests_metric.labels(endpoint="/amarillo-metrics").inc()
     return PlainTextResponse(content=generate_latest())
+
+
+#TODO: maybe replace with an @setup decorator? would make it more obvious this is invoked from outside
+def setup(app: FastAPI):
+    app.include_router(router)
+
+
+    instrumentator = Instrumentator().instrument(app)
+    instrumentator.add(pfi_metrics.default())
+    instrumentator.add(amarillo_trips_number_total())
+
+
+    instrumentator.instrument(app)
