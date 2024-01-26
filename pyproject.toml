@@ -1,8 +1,9 @@
 [project]
 name = "amarillo-metrics"
-version = "0.0.2"
+version = "0.0.3"
 description = "Prometheus metrics for Amarillo"
 readme = "README.md"
+license = {file = "LICENSE"}
 
 dependencies = [
     "fastapi",
