@@ -21,6 +21,15 @@ logger = logging.getLogger(__name__)
 
 security = HTTPBasic()
 
+gtfs_download_counter = Counter("gtfs_downloads", "How many times GTFS data was downloaded")
+grfs_download_counter = Counter("grfs_downloads", "How many times GRFS data was downloaded")
+
+def increment_gtfs_download_counter():
+    gtfs_download_counter.inc()
+
+def increment_grfs_download_counter():
+    grfs_download_counter.inc()
+
 def amarillo_trips_number_total() -> Callable[[Info], None]:
     METRIC = Gauge("amarillo_trips_number_total", "Total number of trips.")
 
