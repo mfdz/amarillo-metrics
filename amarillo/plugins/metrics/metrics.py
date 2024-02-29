@@ -44,6 +44,41 @@ def amarillo_trips_number_total() -> Callable[[Info], None]:
 
     return instrumentation
 
+def amarillo_gtfs_file_size() -> Callable[[Info], None]:
+    METRIC = Gauge("amarillo_gtfs_file_size_MB", "Total file size of GTFS data.")
+
+    def instrumentation(info: Info) -> None:
+        total_size = sum(os.path.getsize(os.path.join(path, file)) for path, dirnames, files in os.walk("./data/gtfs") for file in files)
+        METRIC.set(total_size/1_000_000)
+
+    return instrumentation
+
+def amarillo_grfs_file_size() -> Callable[[Info], None]:
+    METRIC = Gauge("amarillo_grfs_file_size_MB", "Total file size of GRFS data.")
+
+    def instrumentation(info: Info) -> None:
+        total_size = sum(os.path.getsize(os.path.join(path, file)) for path, dirnames, files in os.walk("./data/grfs") for file in files)
+        METRIC.set(total_size/1_000_000)
+
+    return instrumentation
+
+def amarillo_errors() -> Callable[[Info], None]:
+    METRIC = Gauge("amarillo_errors", "Number of errors in the error.log file")
+
+    def instrumentation(info: Info) -> None:
+        file_path = "error.log"
+        search_string = " - ERROR - "
+
+        error_count = 0
+        try:
+            with open(file_path, 'r') as file:
+                error_count = sum(1 for line in file if search_string in line)
+                # logger.info(f"Number of lines containing '{search_string}': {error_count}")
+        except FileNotFoundError:
+            logger.warning(f"File '{file_path}' not found.")
+        METRIC.set(error_count)
+
+    return instrumentation
 
 router = APIRouter(
     prefix="/metrics",
@@ -73,6 +108,9 @@ def setup(app: FastAPI):
     instrumentator = Instrumentator().instrument(app)
     instrumentator.add(pfi_metrics.default())
     instrumentator.add(amarillo_trips_number_total())
+    instrumentator.add(amarillo_gtfs_file_size())
+    instrumentator.add(amarillo_grfs_file_size())
+    instrumentator.add(amarillo_errors())
 
 
     instrumentator.instrument(app)
