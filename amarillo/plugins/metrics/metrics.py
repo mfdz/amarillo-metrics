@@ -15,7 +15,7 @@ from fastapi import Depends, HTTPException, FastAPI
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import PlainTextResponse
 
-from amarillo.services.secrets import secrets
+from amarillo.plugins.metrics.secrets import secrets
 
 logger = logging.getLogger(__name__)
 
