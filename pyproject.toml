@@ -1,6 +1,6 @@
 [project]
 name = "amarillo-metrics"
-version = "0.0.6"
+version = "0.0.8"
 description = "Prometheus metrics for Amarillo"
 readme = "README.md"
 license = {file = "LICENSE"}

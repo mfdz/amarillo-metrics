@@ -16,6 +16,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import PlainTextResponse
 
 from amarillo.plugins.metrics.secrets import secrets
+from amarillo.services.hooks import CarpoolEvents, register_carpool_event_listener
+from amarillo.models.Carpool import Carpool
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,16 @@ trips_created_counter = Counter("amarillo_trips_created", "How many trips have b
 trips_updated_counter = Counter("amarillo_trips_updated", "How many existing trips have been updated")
 trips_deleted_counter = Counter("amarillo_trips_deleted", "How many trips have been deleted")
 
+class CarpoolMetricsEvents(CarpoolEvents):
+    def on_create(carpool: Carpool):
+        logger.info("Incrementing trips created")
+        trips_created_counter.inc()
+    def on_update(carpool: Carpool):
+        logger.info("Incrementing trips updated")
+        trips_updated_counter.inc()
+    def on_delete(carpool: Carpool):
+        logger.info("Incrementing trips deleted")
+        trips_deleted_counter.inc()
 
 def amarillo_trips_number_total() -> Callable[[Info], None]:
     METRIC = Gauge("amarillo_trips_number_total", "Total number of trips.")
@@ -112,5 +124,6 @@ def setup(app: FastAPI):
     instrumentator.add(amarillo_grfs_file_size())
     instrumentator.add(amarillo_errors())
 
+    register_carpool_event_listener(CarpoolMetricsEvents)
 
     instrumentator.instrument(app)
