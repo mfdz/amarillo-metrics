@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'builtin' }
     environment {
         GITEA_CREDS = credentials('AMARILLO-JENKINS-GITEA-USER')
         PYPI_CREDS = credentials('AMARILLO-JENKINS-PYPI-USER')
