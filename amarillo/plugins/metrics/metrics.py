@@ -38,13 +38,13 @@ trips_deleted_counter = Counter("amarillo_trips_deleted", "How many trips have b
 
 class CarpoolMetricsEvents(CarpoolEvents):
     def on_create(carpool: Carpool):
-        logger.info("Incrementing trips created")
+        logger.debug("Incrementing trips created")
         trips_created_counter.inc()
     def on_update(carpool: Carpool):
-        logger.info("Incrementing trips updated")
+        logger.debug("Incrementing trips updated")
         trips_updated_counter.inc()
     def on_delete(carpool: Carpool):
-        logger.info("Incrementing trips deleted")
+        logger.debug("Incrementing trips deleted")
         trips_deleted_counter.inc()
 
 def amarillo_trips_number_total() -> Callable[[Info], None]:
